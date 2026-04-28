@@ -7,7 +7,6 @@ load_dotenv()
 
 BASE_URL = os.getenv("BASE_URL")
 
-# ==================== GET CURRENT USER TESTS ====================
 
 def test_get_current_user_with_valid_token(auth_headers):
     """Positive: Get current user with valid token"""
@@ -46,7 +45,6 @@ def test_get_current_user_with_invalid_token():
     data = response.json()
     assert "message" in data
 
-# ==================== GET ALL USERS TESTS ====================
 
 def test_get_all_users_with_valid_token(auth_headers):
     """Positive: Get all users with valid token"""
@@ -82,8 +80,6 @@ def test_get_all_users_with_malformed_token():
     data = response.json()
     assert "message" in data
 
-
-# ==================== GET SPECIFIC USER TESTS ====================
 
 def test_get_user_with_invalid_id(auth_headers):
     """Negative: Get user with non-existent ID"""
