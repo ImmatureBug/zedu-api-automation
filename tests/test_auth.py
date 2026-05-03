@@ -1,7 +1,13 @@
+from utils.schemas import (
+    validate_login_response,
+    validate_register_response,
+    validate_error_response
+)
+
 import pytest
 import requests
 import os
-import uuid
+import faker
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -9,12 +15,15 @@ load_dotenv()
 BASE_URL = os.getenv("BASE_URL")
 
 
-def unique_email():
-    return f"testuser_{uuid.uuid4().hex[:8]}@gmail.com"
+from faker import Faker
 
+fake = Faker()
+
+def unique_email():
+    return fake.email()
 
 def unique_username():
-    return f"testuser_{uuid.uuid4().hex[:8]}"
+    return fake.user_name()
 
 
 
@@ -33,6 +42,7 @@ def test_login_with_valid_credentials():
     assert "access_token" in data["data"]
     assert isinstance(data["data"]["access_token"], str)
     assert "user" in data["data"]
+    validate_login_response(data)
 
 
 def test_login_with_wrong_password():
@@ -55,7 +65,7 @@ def test_login_with_invalid_email_format():
     response = requests.post(
         f"{BASE_URL}/auth/login",
         json={
-            "email": "dara@gmail.com",
+            "email": unique_email(),
             "password": os.getenv("PASSWORD")
         }
     )
@@ -114,13 +124,14 @@ def test_register_with_valid_credentials():
             "password": "Helloworld34",
             "first_name": "temi",
             "last_name": "Olagunju",
-            "phone_number": f"080{uuid.uuid4().int % 100000000:08d}"
+            "phone_number": fake.numerify("080########")
         }
     )
     assert response.status_code in [200, 201]
     data = response.json()
     assert data["status"] == "success"
     assert "access_token" in data["data"]
+    validate_register_response(data)
 
 
 def test_register_with_existing_email():
@@ -221,7 +232,7 @@ def test_register_with_short_password():
             "password": "ab",
             "first_name": "Test",
             "last_name": "User",
-            "phone_number": f"080{uuid.uuid4().int % 100000000:08d}"
+            "phone_number": fake.numerify("080########")
         }
     )
     # BUG: API accepts short passwords, should return 400 or 422
@@ -415,7 +426,7 @@ def test_register_response_contains_required_fields():
             "password": "mariam345",
             "first_name": "lawal",
             "last_name": "mariam",
-            "phone_number": f"080{uuid.uuid4().int % 100000000:08d}"
+            "phone_number": fake.numerify("080########")
         }
     )
     assert response.status_code in [200, 201]
@@ -449,7 +460,7 @@ def test_register_with_special_characters_in_username():
             "password": "Albertin3452",
             "first_name": "Albertine",
             "last_name": "Lawal",
-            "phone_number": f"080{uuid.uuid4().int % 100000000:08d}"
+            "phone_number": fake.numerify("080########")
         }
     )
     assert response.status_code in [200, 201, 400, 422]
