@@ -36,7 +36,7 @@ def test_login_with_valid_credentials():
             "password": os.getenv("PASSWORD")
         }
     )
-    assert response.status_code == 999
+    assert response.status_code == 200
     data = response.json()
     assert data["status"] == "success"
     assert "access_token" in data["data"]
