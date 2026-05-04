@@ -14,3 +14,5 @@ __pycache__/
 
 # HTML reports
 reports/
+
+report.xml
