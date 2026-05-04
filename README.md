@@ -1,3 +1,6 @@
+[![CI - Zedu API Tests](https://github.com/ImmatureBug/zedu-api-automation/actions/workflows/ci.yml/badge.svg)](https://github.com/ImmatureBug/zedu-api-automation/actions/workflows/ci.yml)
+
+
 Zedu API Automation:
 
 This my task tests the backend APIs of the Zedu platform automatically using  the Python and Pytest. So it basically work like this, instead of manually sending requests in Postman every time, this task runs all the tests with one command and tells you exactly what passed and what failed.
@@ -119,6 +122,20 @@ conftest.py: This file sets up shared fixtures that any test can use which inclu
 .env: This file holds your credentials. It is cannot and can never be uploaded to GitHub. 
 You must create it yourself by copying `.env.example`.
 
+The CI/CD Pipeline: this uses GitHub Actions for continuous integration.
+
+Every time code is pushed to the main branch, the pipeline automatically:
+1. Installs all dependencies
+2. Runs the full test suite
+3. Generates a test report
+4. Fails the build if any test fails
+
+The workflow file is located at `.github/workflows/ci.yml`
+
+Environment variables are stored as GitHub Secrets:
+- `BASE_URL`: the API base URL
+- `EMAIL`: test account email
+- `PASSWORD`: test account password
 
 
 Things I found during testing: While working on this task i discovered some real bugs in the Zedu API, these includes:
@@ -133,3 +150,16 @@ These are documented in the test names and comments inside the code.
 The total test coverage, include;
 For the file, we take a look at test_auth.py which we did 29 tests and they all passed.
 we have test_user which i did 9 tests and they all passed. the total of everything is 38 tests and they all passed it
+
+
+What Changed After Stage 3:
+
+After getting feedback from Stage 3, I made some improvements to the project:
+
+The first thing I fixed was replacing `uuid` with the `Faker` library for generating test data. Faker creates more realistic emails and usernames instead of random strings, and it solves the idempotency problem completely so that every test that run gets a new fresh unique data so tests never conflict with previous runs.
+
+I also found one hardcoded email in my tests (`dara@gmail.com`) and replaced it with a dynamically generated one. No real emails should ever appear directly in test code.
+
+Then I added a `utils/schemas.py` file that validates the full structure of API responses such as checking field presence, data types and required values and not just status codes.
+
+Finally I added a GitHub Actions CI pipeline so that every time I push code to GitHub, all 38 tests run automatically without me having to do anything manually.
